@@ -1,226 +1,50 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI考试练习系统 - 移动版</title>
+    <title>AI考试练习系统 - 移动端</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 10px;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 0.9em;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
-        .question-area {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-left: 4px solid #2196F3;
-        }
-
-        .question-type {
-            background: #2196F3;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        .question-text {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .options-area {
-            margin-bottom: 20px;
-        }
-
-        .option {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .option:hover {
-            border-color: #2196F3;
-            background: #f8f9ff;
-        }
-
-        .option.selected {
-            border-color: #2196F3;
-            background: #e3f2fd;
-        }
-
-        .option.correct {
-            border-color: #4CAF50;
-            background: #e8f5e8;
-        }
-
-        .option.incorrect {
-            border-color: #f44336;
-            background: #ffe8e8;
-        }
-
-        .option input {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-
-        .buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: #2196F3;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1976D2;
-        }
-
-        .btn-success {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #45a049;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .stats {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .stats-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .result {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .result.success {
-            background: #e8f5e8;
-            color: #2e7d32;
-        }
-
-        .result.error {
-            background: #ffe8e8;
-            color: #c62828;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                margin: 5px;
-                border-radius: 10px;
-            }
-
-            .header {
-                padding: 15px;
-            }
-
-            .content {
-                padding: 15px;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 10px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(45deg, #2196F3, #21CBF3); color: white; padding: 20px; text-align: center; }
+        .header h1 { font-size: 1.5em; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 0.9em; }
+        .content { padding: 20px; }
+        .question-area { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 20px; border-left: 4px solid #2196F3; }
+        .question-type { background: #2196F3; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; display: inline-block; margin-bottom: 10px; }
+        .question-no { margin-left: 10px; color: #555; font-size: 0.85em; }
+        .question-text { font-size: 1.1em; line-height: 1.6; color: #333; }
+        .options-area { margin-bottom: 20px; }
+        .option { background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; }
+        .option:hover { border-color: #2196F3; background: #f8f9ff; }
+        .option.selected { border-color: #2196F3; background: #e3f2fd; }
+        .option.correct { border-color: #4CAF50; background: #e8f5e8; }
+        .option.incorrect { border-color: #f44336; background: #ffe8e8; }
+        .option input { margin-right: 10px; transform: scale(1.2); }
+        .buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 1em; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: #2196F3; color: white; }
+        .btn-primary:hover { background: #1976D2; }
+        .btn-success { background: #4CAF50; color: white; }
+        .btn-success:hover { background: #388E3C; }
+        .stats { background: #f8f9fa; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+        .stats-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e0e0e0; }
+        .stats-row:last-child { border-bottom: none; }
+        .result { padding: 12px; border-radius: 10px; background: #fff3cd; color: #856404; margin-bottom: 12px; }
+        .result.success { background: #e8f5e9; color: #2e7d32; }
+        .result.error { background: #ffebee; color: #c62828; }
+        .hidden { display: none; }
+        .jump-area { display: flex; gap: 10px; margin-bottom: 12px; }
+        .jump-area input { flex: 1; padding: 10px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 1em; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🎯 AI考试练习系统</h1>
-            <p>移动端版本 | 随时随地练习</p>
+            <p>移动端版 · 随时随地练习</p>
         </div>
 
         <div class="content">
@@ -228,7 +52,7 @@
             <div id="start-screen">
                 <div class="result">
                     <div>
-                        <h3>欢迎使用AI考试系统！</h3>
+                        <h3>欢迎使用AI考试系统</h3>
                         <p>支持单选题、多选题、判断题练习</p>
                     </div>
                 </div>
@@ -240,13 +64,18 @@
                 <!-- 题目区域 -->
                 <div class="question-area">
                     <div class="question-type" id="question-type">单选题</div>
+                    <span class="question-no" id="question-no"></span>
                     <div class="question-text" id="question-text">题目内容...</div>
                 </div>
 
-                <!-- 选项区域 -->
-                <div class="options-area" id="options-area">
-                    <!-- 选项将通过JavaScript动态生成 -->
+                <!-- 跳题区域 -->
+                <div class="jump-area">
+                    <input type="number" id="jump-input" min="1" placeholder="输入要跳转的题号">
+                    <button class="btn" onclick="jumpToQuestion()">跳转</button>
                 </div>
+
+                <!-- 选项区域 -->
+                <div class="options-area" id="options-area"></div>
 
                 <!-- 按钮区域 -->
                 <div class="buttons">
@@ -258,7 +87,7 @@
                 <div class="stats" id="stats">
                     <div class="stats-row">
                         <span>📊 进度:</span>
-                        <span id="progress">第 0 题</span>
+                        <span id="progress">已 0 题</span>
                     </div>
                     <div class="stats-row">
                         <span>✅ 正确:</span>
@@ -271,9 +100,7 @@
                 </div>
 
                 <!-- 结果显示 -->
-                <div class="result" id="result">
-                    请选择答案后点击提交
-                </div>
+                <div class="result" id="result">请选择答案后点击提交</div>
 
                 <!-- 重新开始按钮 -->
                 <button class="btn btn-primary" onclick="restartExam()" style="width: 100%">重新开始</button>
@@ -322,6 +149,8 @@
                 'judgment': '【判断题】'
             };
             document.getElementById('question-type').textContent = typeNames[data.question_type];
+            const qno = document.getElementById('question-no');
+            if (qno) qno.textContent = `第 ${data.question_number} 题 / 共 ${data.total_count} 题`;
 
             // 显示题目内容
             document.getElementById('question-text').textContent = data.question_text;
@@ -401,10 +230,10 @@
         function showResult(data) {
             const resultDiv = document.getElementById('result');
             if (data.is_correct) {
-                resultDiv.textContent = `✅ 恭喜！回答正确！`;
+                resultDiv.textContent = `恭喜！回答正确！`;
                 resultDiv.className = 'result success';
             } else {
-                resultDiv.textContent = `❌ 回答错误！正确答案: ${data.correct_answer}`;
+                resultDiv.textContent = `回答错误！正确答案: ${data.correct_answer}`;
                 resultDiv.className = 'result error';
             }
         }
@@ -427,18 +256,40 @@
 
         function updateStats(data = null) {
             if (data) {
-                document.getElementById('progress').textContent = `第 ${data.total_questions} 题`;
+                document.getElementById('progress').textContent = '已 ' + data.total_questions + ' 题';
                 document.getElementById('correct-count').textContent = `${data.correct_answers} 题`;
                 document.getElementById('accuracy').textContent = `${data.accuracy}%`;
             } else {
                 fetch('/get_stats')
                     .then(response => response.json())
                     .then(statsData => {
-                        document.getElementById('progress').textContent = `第 ${statsData.total_questions} 题`;
+                        document.getElementById('progress').textContent = '已 ' + statsData.total_questions + ' 题';
                         document.getElementById('correct-count').textContent = `${statsData.correct_answers} 题`;
                         document.getElementById('accuracy').textContent = `${statsData.accuracy}%`;
                     });
             }
+        }
+
+        function jumpToQuestion() {
+            const input = document.getElementById('jump-input');
+            const value = parseInt(input.value, 10);
+            if (!value || value < 1) { alert('请输入有效的题号'); return; }
+            // 重置界面状态
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('result').textContent = '请选择答案后点击提交';
+            document.getElementById('result').className = 'result';
+            selectedAnswers = [];
+            fetch('/jump_to', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ question_number: value }) })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayQuestion(data);
+                        updateStats();
+                    } else {
+                        alert(data.message || '跳转失败');
+                    }
+                });
         }
 
         function restartExam() {

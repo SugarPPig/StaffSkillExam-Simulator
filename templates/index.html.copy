@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI鑰冭瘯缁冧範绯荤粺 - 绉诲姩鐗?/title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .question-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .question-type {
+            background: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .options-area {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #2196F3;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #2196F3;
+            background: #e3f2fd;
+        }
+
+        .option.correct {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #ffe8e8;
+        }
+
+        .option input {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .stats-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .result {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .result.error {
+            background: #ffe8e8;
+            color: #c62828;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>馃幆 AI鑰冭瘯缁冧範绯荤粺</h1>
+            <p>绉诲姩绔増鏈?| 闅忔椂闅忓湴缁冧範</p>
+        </div>
+
+        <div class="content">
+            <!-- 寮€濮嬬晫闈?-->
+            <div id="start-screen">
+                <div class="result">
+                    <div>
+                        <h3>娆㈣繋浣跨敤AI鑰冭瘯绯荤粺锛?/h3>
+                        <p>鏀寔鍗曢€夐銆佸閫夐銆佸垽鏂缁冧範</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="startExam()">寮€濮嬭€冭瘯</button>
+            </div>
+
+            <!-- 鑰冭瘯鐣岄潰 -->
+            <div id="exam-screen" class="hidden">
+                <!-- 棰樼洰鍖哄煙 -->
+                <div class="question-area">
+                    <div class="question-type" id="question-type">鍗曢€夐</div>
+                    <div class="question-text" id="question-text">棰樼洰鍐呭...</div>
+                </div>
+
+                <!-- 閫夐」鍖哄煙 -->
+                <div class="options-area" id="options-area">
+                    <!-- 閫夐」灏嗛€氳繃JavaScript鍔ㄦ€佺敓鎴?-->
+                </div>
+
+                <!-- 鎸夐挳鍖哄煙 -->
+                <div class="buttons">
+                    <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">鎻愪氦绛旀</button>
+                    <button class="btn btn-success" id="next-btn" onclick="nextQuestion()" disabled>涓嬩竴棰?/button>
+                </div>
+
+                <!-- 缁熻淇℃伅 -->
+                <div class="stats" id="stats">
+                    <div class="stats-row">
+                        <span>馃搳 杩涘害:</span>
+                        <span id="progress">绗?0 棰?/span>
+                    </div>
+                    <div class="stats-row">
+                        <span>鉁?姝ｇ‘:</span>
+                        <span id="correct-count">0 棰?/span>
+                    </div>
+                    <div class="stats-row">
+                        <span>馃搱 姝ｇ‘鐜?</span>
+                        <span id="accuracy">0%</span>
+                    </div>
+                </div>
+
+                <!-- 缁撴灉鏄剧ず -->
+                <div class="result" id="result">
+                    璇烽€夋嫨绛旀鍚庣偣鍑绘彁浜?
+                </div>
+
+                <!-- 閲嶆柊寮€濮嬫寜閽?-->
+                <button class="btn btn-primary" onclick="restartExam()" style="width: 100%">閲嶆柊寮€濮?/button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionData = null;
+        let selectedAnswers = [];
+
+        function startExam() {
+            fetch('/start_exam', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('start-screen').classList.add('hidden');
+                    document.getElementById('exam-screen').classList.remove('hidden');
+                    nextQuestion();
+                });
+        }
+
+        function nextQuestion() {
+            // 閲嶇疆鐣岄潰鐘舵€?
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('result').textContent = '璇烽€夋嫨绛旀鍚庣偣鍑绘彁浜?;
+            document.getElementById('result').className = 'result';
+            selectedAnswers = [];
+
+            fetch('/get_question')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        currentQuestionData = data;
+                        displayQuestion(data);
+                        updateStats();
+                    }
+                });
+        }
+
+        function displayQuestion(data) {
+            // 鏄剧ず棰樼洰绫诲瀷
+            const typeNames = {
+                'single_choice': '銆愬崟閫夐銆?,
+                'multiple_choice': '銆愬閫夐銆?,
+                'judgment': '銆愬垽鏂銆?
+            };
+            document.getElementById('question-type').textContent = typeNames[data.question_type];
+
+            // 鏄剧ず棰樼洰鍐呭
+            document.getElementById('question-text').textContent = data.question_text;
+
+            // 鐢熸垚閫夐」
+            const optionsArea = document.getElementById('options-area');
+            optionsArea.innerHTML = '';
+
+            data.options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.onclick = () => selectOption(option.value, data.question_type);
+
+                const inputType = data.question_type === 'multiple_choice' ? 'checkbox' : 'radio';
+                const inputName = data.question_type === 'multiple_choice' ? 'answer[]' : 'answer';
+
+                optionDiv.innerHTML = `
+                    <input type="${inputType}" name="${inputName}" value="${option.value}" id="option-${option.value}">
+                    <label for="option-${option.value}">${option.value}. ${option.text}</label>
+                `;
+
+                optionsArea.appendChild(optionDiv);
+            });
+        }
+
+        function selectOption(value, questionType) {
+            const input = document.getElementById(`option-${value}`);
+
+            if (questionType === 'multiple_choice') {
+                input.checked = !input.checked;
+                if (input.checked) {
+                    if (!selectedAnswers.includes(value)) {
+                        selectedAnswers.push(value);
+                    }
+                } else {
+                    selectedAnswers = selectedAnswers.filter(a => a !== value);
+                }
+            } else {
+                // 鍗曢€夐鍜屽垽鏂
+                document.querySelectorAll('input[name="answer"]').forEach(inp => inp.checked = false);
+                input.checked = true;
+                selectedAnswers = [value];
+            }
+
+            // 鏇存柊閫夐」鏍峰紡
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('input:checked').forEach(inp => {
+                inp.closest('.option').classList.add('selected');
+            });
+        }
+
+        function submitAnswer() {
+            if (selectedAnswers.length === 0) {
+                alert('璇峰厛閫夋嫨绛旀');
+                return;
+            }
+
+            const answer = selectedAnswers.sort().join('');
+
+            fetch('/submit_answer', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({answer: answer})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showResult(data);
+                    highlightOptions(data);
+                    document.getElementById('submit-btn').disabled = true;
+                    document.getElementById('next-btn').disabled = false;
+                    updateStats(data);
+                }
+            });
+        }
+
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            if (data.is_correct) {
+                resultDiv.textContent = `鉁?鎭枩锛佸洖绛旀纭紒`;
+                resultDiv.className = 'result success';
+            } else {
+                resultDiv.textContent = `鉂?鍥炵瓟閿欒锛佹纭瓟妗? ${data.correct_answer}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        function highlightOptions(data) {
+            const correctAnswers = data.correct_answer.split('');
+            const userAnswers = data.user_answer.split('');
+
+            document.querySelectorAll('.option').forEach(option => {
+                const input = option.querySelector('input');
+                const value = input.value;
+
+                if (correctAnswers.includes(value)) {
+                    option.classList.add('correct');
+                } else if (userAnswers.includes(value)) {
+                    option.classList.add('incorrect');
+                }
+            });
+        }
+
+        function updateStats(data = null) {
+            if (data) {
+                document.getElementById('progress').textContent = `绗?${data.total_questions} 棰榒;
+                document.getElementById('correct-count').textContent = `${data.correct_answers} 棰榒;
+                document.getElementById('accuracy').textContent = `${data.accuracy}%`;
+            } else {
+                fetch('/get_stats')
+                    .then(response => response.json())
+                    .then(statsData => {
+                        document.getElementById('progress').textContent = `绗?${statsData.total_questions} 棰榒;
+                        document.getElementById('correct-count').textContent = `${statsData.correct_answers} 棰榒;
+                        document.getElementById('accuracy').textContent = `${statsData.accuracy}%`;
+                    });
+            }
+        }
+
+        function restartExam() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>

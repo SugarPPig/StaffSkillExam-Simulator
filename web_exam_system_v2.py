@@ -23,20 +23,14 @@ class WebExamSystem:
         self.load_questions()
 
     def load_questions(self):
-        """加载题库文件"""
+        """加载题库文件（保持文件中的原始顺序）"""
         try:
-            # 加载单选题（保持文件中的原始顺序）
             with open('single_choice.json', 'r', encoding='utf-8') as f:
                 self.questions['single_choice'] = json.load(f)
-
-            # 加载多选题（保持文件中的原始顺序）
             with open('multiple_choice.json', 'r', encoding='utf-8') as f:
                 self.questions['multiple_choice'] = json.load(f)
-
-            # 加载判断题（保持文件中的原始顺序）
             with open('judgment.json', 'r', encoding='utf-8') as f:
                 self.questions['judgment'] = json.load(f)
-
             return True
         except Exception as e:
             print(f"加载题库失败: {e}")
@@ -46,7 +40,6 @@ class WebExamSystem:
         """检查答案是否正确"""
         user_answer = user_answer.upper().strip()
         correct_answer = correct_answer.upper().strip()
-
         if question_type == 'multiple_choice':
             # 多选题需要所有选项都正确
             user_set = set(user_answer.replace(' ', ''))
@@ -60,7 +53,6 @@ exam_system = WebExamSystem()
 
 @app.route('/')
 def index():
-    """主页"""
     return render_template('index.html')
 
 @app.route('/start_exam', methods=['POST'])
@@ -82,29 +74,31 @@ def get_question():
     type_idx = session.get('type_idx', 0)
     q_idx = session.get('q_idx', 0)
 
+    # 计算总题数
+    total_count = sum(len(exam_system.questions.get(t, [])) for t in type_order)
+
     question = None
     question_type = None
+    current_local_idx = None
+    current_type_idx = None
 
     # 顺序遍历，跳过空题型和已完成的题型
     while type_idx < len(type_order):
         t = type_order[type_idx]
         questions = exam_system.questions.get(t, [])
-
         if not questions:
-            # 当前题型无题，跳过
             type_idx += 1
             q_idx = 0
             continue
-
         if q_idx >= len(questions):
-            # 当前题型做完，进入下一个题型
             type_idx += 1
             q_idx = 0
             continue
-
         # 取出当前题
         question_type = t
         question = questions[q_idx]
+        current_local_idx = q_idx
+        current_type_idx = type_idx
         # 移动到下一题
         q_idx += 1
         break
@@ -116,8 +110,14 @@ def get_question():
     if not question:
         return jsonify({'status': 'error', 'message': '已无更多题目'})
 
-    # 增加题目计数
+    # 增加题目计数（用于统计）
     session['total_questions'] = session.get('total_questions', 0) + 1
+
+    # 计算当前题的全局题号（1-based）
+    question_number = 1
+    if current_type_idx is not None and current_local_idx is not None:
+        prev_count = sum(len(exam_system.questions.get(t, [])) for t in type_order[:current_type_idx])
+        question_number = prev_count + current_local_idx + 1
 
     # 准备选项数据
     options = []
@@ -151,21 +151,20 @@ def get_question():
         'question_type': question_type,
         'question_text': question.get('Unnamed: 1', ''),
         'options': options,
-        'question_number': session['total_questions'],
-        'correct_answer': question.get('Unnamed: 7', '')  # 暂时返回，实际应隐藏
+        'question_number': question_number,
+        'total_count': total_count,
+        'correct_answer': question.get('Unnamed: 7', '')
     })
 
 @app.route('/submit_answer', methods=['POST'])
 def submit_answer():
     """提交答案"""
     user_answer = request.json.get('answer', '')
-
     if not user_answer:
         return jsonify({'status': 'error', 'message': '请先选择答案'})
 
     current_question = session.get('current_question')
     current_question_type = session.get('current_question_type')
-
     if not current_question:
         return jsonify({'status': 'error', 'message': '没有当前题目'})
 
@@ -196,7 +195,6 @@ def get_stats():
     """获取统计信息"""
     answered_questions = session.get('answered_questions', 0)
     accuracy = (session.get('correct_answers', 0) / answered_questions) * 100 if answered_questions > 0 else 0
-
     return jsonify({
         'total_questions': session.get('total_questions', 0),
         'correct_answers': session.get('correct_answers', 0),
@@ -204,9 +202,86 @@ def get_stats():
         'accuracy': round(accuracy, 1)
     })
 
-if __name__ == '__main__':
-    print("AI考试系统Web版本 v2（固定顺序）启动中...")
-    print("访问地址: http://localhost:5000")
-    print("手机访问: http://[电脑IP]:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+@app.route('/jump_to', methods=['POST'])
+def jump_to():
+    """跳到指定题号（1-based），并返回该题"""
+    type_order = session.get('type_order', ['single_choice', 'multiple_choice', 'judgment'])
+    data = request.get_json(silent=True) or {}
+    try:
+        n = int(data.get('question_number', 1))
+    except Exception:
+        return jsonify({'status': 'error', 'message': '题号无效'}), 400
 
+    # 计算总题数
+    total_count = sum(len(exam_system.questions.get(t, [])) for t in type_order)
+    if n < 1 or n > total_count:
+        return jsonify({'status': 'error', 'message': f'题号范围应在 1 到 {total_count} 之间'}), 400
+
+    # 将题号映射到 (type_idx, q_idx)
+    idx = n - 1
+    type_idx = 0
+    q_idx = 0
+    for ti, t in enumerate(type_order):
+        cnt = len(exam_system.questions.get(t, []))
+        if idx < cnt:
+            type_idx = ti
+            q_idx = idx
+            break
+        idx -= cnt
+
+    # 设置指针并直接返回该题（与 get_question 相同格式）
+    session['type_idx'] = type_idx
+    session['q_idx'] = q_idx
+
+    questions = exam_system.questions.get(type_order[type_idx], [])
+    if not questions:
+        return jsonify({'status': 'error', 'message': '无效的题号'}), 400
+    question_type = type_order[type_idx]
+    question = questions[q_idx]
+
+    # 计算选项
+    options = []
+    if question_type == 'single_choice':
+        options = [
+            {'value': 'A', 'text': question.get('Unnamed: 2', '')},
+            {'value': 'B', 'text': question.get('Unnamed: 3', '')},
+            {'value': 'C', 'text': question.get('Unnamed: 4', '')},
+            {'value': 'D', 'text': question.get('Unnamed: 5', '')}
+        ]
+    elif question_type == 'multiple_choice':
+        options = [
+            {'value': 'A', 'text': question.get('Unnamed: 2', '')},
+            {'value': 'B', 'text': question.get('Unnamed: 3', '')},
+            {'value': 'C', 'text': question.get('Unnamed: 4', '')},
+            {'value': 'D', 'text': question.get('Unnamed: 5', '')},
+            {'value': 'E', 'text': question.get('Unnamed: 6', '')}
+        ]
+    elif question_type == 'judgment':
+        options = [
+            {'value': 'A', 'text': '正确'},
+            {'value': 'B', 'text': '错误'}
+        ]
+
+    # 设置当前题目、类型，推进指针到下一题
+    session['current_question'] = question
+    session['current_question_type'] = question_type
+    session['q_idx'] = q_idx + 1
+
+    # 统计总题计数用于进度
+    session['total_questions'] = session.get('total_questions', 0) + 1
+
+    return jsonify({
+        'status': 'success',
+        'question_type': question_type,
+        'question_text': question.get('Unnamed: 1', ''),
+        'options': options,
+        'question_number': n,
+        'total_count': total_count,
+        'correct_answer': question.get('Unnamed: 7', '')
+    })
+
+if __name__ == '__main__':
+    print('AI考试系统Web版本 v2（固定顺序）启动中...')
+    print('访问地址: http://localhost:5000')
+    print('手机访问: http://[电脑IP]:5000')
+    app.run(host='0.0.0.0', port=5000, debug=True)
